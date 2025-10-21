@@ -1,0 +1,63 @@
+    .todos-content {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      padding: 1rem;
+      height: 100%;
+      overflow-y: auto;
+      background: linear-gradient(to bottom, #e0eafc, #cfdef3);
+    }
+    ion-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    .todo-item {
+
+      border-radius: 15px;
+      box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+      padding: 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .todo-item:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 12px 25px rgba(0,0,0,0.12);
+    }
+    .todo-item h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      margin: 0;
+      color: #1a237e;
+    }
+    .todo-item p {
+      font-size: 0.95rem;
+      color: #555;
+      margin: 0;
+    }
+    .todo-buttons {
+      display: flex;
+      gap: 0.5rem;
+      margin-top: 0.5rem;
+      flex-wrap: wrap;
+    }
+    .todo-buttons ion-button {
+      flex: 1;
+      font-weight: 600;
+      border-radius: 12px;
+    }
+    ion-button[expand="full"] {
+      margin-top: 1rem;
+      font-weight: 700;
+      --border-radius: 12px;
+      --background: #ff6f61;
+      --background-activated: #e65c50;
+      color: #fff;
+    }
+    @media (max-width: 480px) {
+      .todo-item h2 { font-size: 1rem; }
+      .todo-item p { font-size: 0.85rem; }
+      .todo-buttons ion-button { font-size: 0.85rem; }
+    }

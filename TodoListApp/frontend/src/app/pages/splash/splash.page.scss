@@ -1,0 +1,40 @@
+.splash-content {
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;  // alinhamento vertical
+  height: 100%;
+  background-color: #ffffff; // fundo branco
+
+  .logo-container {
+    text-align: center;
+    margin-top: 25%;         // move a logo mais para baixo (ajuste conforme precisar)
+    animation: fadeInScale 2s ease-in-out;
+
+    .logo {
+      width: 150px;       // largura máxima
+      height: auto;       // mantém proporção
+      max-height: 150px;  // opcional
+      margin-bottom: 20px;
+    }
+
+    h1 {
+      font-size: 2rem;
+      color: #488aff;
+    }
+  }
+}
+
+@keyframes fadeInScale {
+  0% {
+    opacity: 0;
+    transform: scale(0.5);
+  }
+  50% {
+    opacity: 0.7;
+    transform: scale(1.1);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
