@@ -1,9 +1,8 @@
-// login.page.ts
 import { Component } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
 import { Router, RouterModule } from '@angular/router';
-import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -11,122 +10,163 @@ import { CommonModule } from '@angular/common';
   standalone: true,
   imports: [IonicModule, FormsModule, HttpClientModule, RouterModule, CommonModule],
   template: `
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>Login</ion-title>
-  </ion-toolbar>
-</ion-header>
-
 <ion-content [fullscreen]="true" class="login-content">
   <div class="login-wrapper">
-    <div class="login-container">
-      <img src="assets/logo.png" alt="Logo" class="logo">
+    <h1>Login</h1>
 
-      <h2>Bem-vindo de volta!</h2>
-      <p>Entre na sua conta para continuar</p>
-
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" [(ngModel)]="email"></ion-input>
-      </ion-item>
-
-      <ion-item>
-        <ion-label position="floating">Senha</ion-label>
-        <ion-input type="password" [(ngModel)]="password"></ion-input>
-      </ion-item>
-
-      <ion-button expand="block" (click)="login()">Entrar</ion-button>
-
-      <p class="register-link">
-        Não tem uma conta? 
-        <a routerLink="/register">Criar conta</a>
-      </p>
+    <!-- Email -->
+    <div class="input-container">
+      <input type="email" [(ngModel)]="email" placeholder="@  Digite seu email" class="input-field">
     </div>
+
+    <!-- Senha -->
+    <div class="input-container">
+      <input type="password" [(ngModel)]="password" placeholder="🔒 Digite sua senha" class="input-field">
+    </div>
+
+    <ion-button expand="block" class="login-button" (click)="login()">Entrar</ion-button>
+
+    <!-- Links adicionais -->
+    <div class="link1">
+      <p class="forgot-password">
+        <a routerLink="/forgot-password">Esqueceu a senha?</a>
+      </p>
+       </div>
+
+
+      <div class= "link2">
+        <p class="register">
+          Não tem uma conta? <a routerLink="/register">Cadastre-se</a>
+        </p>
+      </div>
+
+
+
+
+
   </div>
 </ion-content>
   `,
   styles: [`
+/* Tela toda branca e centralizada */
 ion-content.login-content {
-  --padding: 0;
-  background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
-  display: flex;
-  flex-direction: column;
-}
-
-.login-wrapper {
+  --background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 2rem 1rem;
-  flex: 1 0 auto;
 }
 
-.login-container {
-  width: 100%;
-  max-width: 400px;
-  background: #fff;
-  padding: 2rem;
-  border-radius: 20px;
-  box-shadow: 0 15px 40px rgba(0,0,0,0.25);
-  text-align: center;
+.login-wrapper {
+  width: 90%;
+  max-width: 350px;
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: stretch;
+  gap: 1rem;
 }
 
-.logo { width: 80px; margin-bottom: 1.5rem; }
-h2 { color: #2575fc; font-size: 1.8rem; font-weight: 700; margin-bottom: 0.5rem; }
-p { color: #666; font-size: 0.9rem; margin-bottom: 1.5rem; }
-
-ion-item {
-  width: 100%;
-  margin-bottom: 1rem;
-  --highlight-color-focused: #2575fc;
-  --border-radius: 12px;
+h1 {
+  text-align: center;
+  color: #334A80;
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 2rem;
+  margin-left:35px;
+  margin-top:35px;
 }
 
-ion-button {
+.input-container {
+  display: flex;
   width: 100%;
-  margin-top: 1rem;
-  --border-radius: 12px;
-  --background: #2575fc;
-  --background-activated: #1a5dcc;
+  margin-left:20px;
+}
+
+.input-field {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #000;
+  border-radius: 8px;
+  background-color: #fff;   /* fundo branco */
+  color: #000;              /* texto digitado preto */
+}
+
+/* Placeholder preto */
+.input-field::placeholder {
+  color: #000;
+  opacity: 1;
+}
+
+.login-button {
+  --background: #334A80;
+  --color: #fff;
   font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 1px;
+  --border-radius: 8px;
+  margin-left:35px;
+  margin-top:85px;
 }
 
-.register-link {
-  margin-top: 1rem;
-  font-size: 0.85rem;
+/* Links adicionais */
+.link1 {
+  display: block;        /* para poder usar margin-left/margin-right */
+  margin-left: 120px;     /* ajuste horizontal do link */
 }
-.register-link a {
-  color: #2575fc;
+
+.link1 p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.link1 a {
+  color: #334A80;
   font-weight: 600;
   text-decoration: none;
 }
 
-@media (max-width: 480px) {
-  .login-container {
-    padding: 1.5rem 1rem;
-  }
-  h2 { font-size: 1.5rem; }
-  p { font-size: 0.85rem; }
-  .logo { width: 70px; }
+
+
+
+.link2 {
+  display: block;        /* para poder usar margin-left/margin-right */
+  margin-right: 18px;     /* ajuste horizontal do link */
 }
+
+.link2 p {
+  margin: 0;
+  font-size: 0.9rem;
+}
+
+.link2 a {
+  color: #334A80;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+
   `]
 })
 export class LoginPage {
   email = '';
   password = '';
 
-  private API_URL = 'http://localhost:5000/api/auth';
+private API_URL = '';
 
-  constructor(
-    private http: HttpClient,
-    private router: Router,
-    private toastCtrl: ToastController
-  ) {}
+constructor(
+  private http: HttpClient,
+  private router: Router,
+  private toastCtrl: ToastController
+) {
+  // Detecta se o app está rodando no navegador do PC ou no celular na mesma rede
+  const hostname = window.location.hostname;
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    // Rodando no PC
+    this.API_URL = 'http://localhost:5000/api/auth';
+  } else {
+    // Rodando em outro dispositivo (celular)
+    this.API_URL = `http://${hostname}:5000/api/auth`;
+  }
+}
+
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const toast = await this.toastCtrl.create({

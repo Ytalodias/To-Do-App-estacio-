@@ -1,33 +1,28 @@
-<ion-header>
-  <ion-toolbar>
-    <ion-title>Crie sua conta</ion-title>
-  </ion-toolbar>
-</ion-header>
-
-<ion-content class="ion-padding login-content">
+<ion-content [fullscreen]="true" class="login-content">
   <div class="login-wrapper">
-    <div class="login-container">
-      <img src="assets/logo.png" class="logo" alt="Logo">
+    <h1>Crie sua conta</h1>
 
-      <ion-item>
-        <ion-label position="floating">Email</ion-label>
-        <ion-input type="email" [(ngModel)]="email"></ion-input>
-      </ion-item>
+    <!-- Email -->
+    <div class="input-container">
+      <input type="email" [(ngModel)]="email" placeholder="@  Digite seu email" class="input-field">
+    </div>
 
-      <ion-item>
-        <ion-label position="floating">Senha</ion-label>
-        <ion-input type="password" [(ngModel)]="password"></ion-input>
-      </ion-item>
+    <!-- Senha -->
+    <div class="input-container">
+      <input type="password" [(ngModel)]="password" placeholder="🔒 Digite sua senha" class="input-field">
+    </div>
 
-      <ion-item>
-        <ion-label position="floating">Confirme a senha</ion-label>
-        <ion-input type="password" [(ngModel)]="confirmPassword"></ion-input>
-      </ion-item>
+    <!-- Confirmação de senha -->
+    <div class="input-container">
+      <input type="password" [(ngModel)]="confirmPassword" placeholder="🔒 Confirme sua senha" class="input-field">
+    </div>
 
-      <ion-button expand="block" (click)="register()">Criar conta</ion-button>
+    <ion-button expand="block" class="login-button" (click)="register()">Criar conta</ion-button>
 
-      <p class="register-link">
-        Já tem uma conta? <a routerLink="/login">Entrar</a>
+    <!-- Link de login -->
+    <div class="link2">
+      <p class="register">
+       <a routerLink="/login">  Já tem uma conta?</a>
       </p>
     </div>
   </div>

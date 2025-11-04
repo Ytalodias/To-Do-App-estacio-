@@ -4,28 +4,33 @@
 <head>
   <meta charset="utf-8" />
 
-  <!-- Título personalizado -->
+  <!-- Título do app -->
   <title>Todo List</title>
-
   <base href="/" />
 
-  <meta name="color-scheme" content="light dark" />
+  <!-- Viewport e cores -->
   <meta name="viewport" content="viewport-fit=cover, width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <meta name="color-scheme" content="light dark" />
   <meta name="format-detection" content="telephone=no" />
   <meta name="msapplication-tap-highlight" content="no" />
 
-  <!-- Favicon padrão -->
+  <!-- Favicon e ícones -->
   <link rel="icon" type="image/png" sizes="32x32" href="assets/logo.png" />
   <link rel="icon" type="image/png" sizes="16x16" href="assets/logo.png" />
   <link rel="apple-touch-icon" sizes="180x180" href="assets/logo.png" />
   <link rel="manifest" href="assets/manifest.json" />
 
-  <!-- Add to homescreen for iOS -->
+  <!-- Meta tags para PWA / iOS -->
   <meta name="mobile-web-app-capable" content="yes" />
-  <meta name="apple-mobile-web-app-status-bar-style" content="black" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-title" content="Todo List" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+  <meta name="theme-color" content="#3880ff" />
+  <meta name="msapplication-navbutton-color" content="#3880ff" />
 
+  <!-- Estilos básicos -->
   <style>
-    /* Fundo branco para toda a página */
+    /* Fundo branco e texto padrão */
     html, body {
       background-color: #ffffff;
       color: #000000;
@@ -34,7 +39,7 @@
       height: 100%;
     }
 
-    /* Fundo branco para todos os ion-content */
+    /* Fundo branco para ion-content */
     ion-content {
       --background: #ffffff;
     }
@@ -43,6 +48,8 @@
 
 <body>
   <app-root></app-root>
+
+  <!-- Scripts do Ionic / Angular serão injetados automaticamente pelo build -->
 </body>
 
 </html>

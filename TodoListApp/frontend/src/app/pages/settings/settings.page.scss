@@ -1,0 +1,102 @@
+/* ================= NORMAL MODE ================= */
+.settings-content {
+  padding: 1rem;
+  background: #F5F5F7;
+  min-height: 100%;
+}
+
+.settings-content::part(scroll) {
+  background: #F5F5F7;
+}
+
+ion-header, ion-toolbar {
+  --background: #FFFFFF;
+  --border-width: 0;
+  --border-color: transparent;
+  box-shadow: none;
+}
+
+ion-title {
+  color: #334A80;
+  font-weight: 700;
+}
+
+.back-button {
+  --color: #414D64;
+  font-weight: 600;
+}
+
+/* ================= ION-ITEM NORMAL ================= */
+ion-item {
+  --background: #FFFFFF;          /* fundo principal */
+  --ion-item-background: #FFFFFF; /* fundo do shadow DOM interno */
+  --color: #334A80;               /* cor do texto */
+  --ion-item-text-color: #334A80; /* cor do shadow DOM interno */
+  --border-radius: 12px;
+  margin-bottom: 12px;
+}
+
+/* partes internas do shadow DOM do item */
+ion-item::part(native),
+ion-item::part(native) ion-label {
+  background-color: #FFFFFF !important;
+  color: #334A80 !important;
+}
+
+/* toggle dentro do item */
+ion-toggle {
+  --background: #CCCCCC;
+  --handle-background: #FFFFFF;
+}
+
+ion-toggle::part(label) {
+  color: #334A80 !important;
+}
+
+/* ================= DARK MODE ================= */
+:host-context(.dark) .settings-content {
+  background: #121212;
+}
+
+:host-context(.dark) .settings-content::part(scroll) {
+  background: #121212;
+}
+
+:host-context(.dark) ion-header,
+:host-context(.dark) ion-toolbar {
+  --background: #1E1E1E;
+}
+
+:host-context(.dark) ion-title {
+  color: #E0E0E0;
+}
+
+:host-context(.dark) .back-button {
+  --color: #BB86FC;
+}
+
+:host-context(.dark) ion-item {
+  --background: #1E1E1E;
+  --ion-item-background: #1E1E1E;
+  --color: #E0E0E0;
+  --ion-item-text-color: #E0E0E0;
+  --border-radius: 12px;
+  margin-bottom: 12px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+}
+
+/* Shadow DOM interno do item */
+:host-context(.dark) ion-item::part(native),
+:host-context(.dark) ion-item::part(native) ion-label {
+  background-color: #1E1E1E !important;
+  color: #E0E0E0 !important;
+}
+
+:host-context(.dark) ion-toggle {
+  --background: #444444;
+  --handle-background: #BB86FC;
+}
+
+:host-context(.dark) ion-toggle::part(label) {
+  color: #E0E0E0 !important;
+}

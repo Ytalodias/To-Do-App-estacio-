@@ -1,17 +1,26 @@
 <ion-header>
   <ion-toolbar>
+    <!-- Botão de voltar -->
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()" class="back-button">
+        ← Voltar
+      </ion-button>
+    </ion-buttons>
+
     <ion-title>Configurações</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content class="ion-padding">
-  <ion-item>
-    <ion-label>Dark Mode</ion-label>
-    <ion-toggle [(ngModel)]="darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
-  </ion-item>
+<ion-content class="settings-content">
+  <ion-list>
+    <ion-item>
+      <ion-label>Modo escuro</ion-label>
+      <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
+    </ion-item>
 
-  <ion-item>
-    <ion-label>Notifications</ion-label>
-    <ion-toggle [(ngModel)]="notifications" (ionChange)="toggleNotifications()"></ion-toggle>
-  </ion-item>
+    <ion-item>
+      <ion-label>Notificações</ion-label>
+      <ion-toggle [(ngModel)]="notifications" (ionChange)="toggleNotifications()"></ion-toggle>
+    </ion-item>
+  </ion-list>
 </ion-content>

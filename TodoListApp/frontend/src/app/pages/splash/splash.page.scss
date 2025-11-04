@@ -17,10 +17,15 @@
       margin-bottom: 20px;
     }
 
-    h1 {
-      font-size: 2rem;
-      color: #488aff;
-    }
+ h1 {
+  font-family: 'Poppins', sans-serif; /* fonte moderna */
+  font-size: 2.5rem;                  /* um pouco maior */
+  font-weight: 700;                    /* mais grossa */
+  color: #161C28;                      /* cor escura */
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
   }
 }
 
