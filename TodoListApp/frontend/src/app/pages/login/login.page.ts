@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
   styles: [`
 /* Tela toda branca e centralizada */
 ion-content.login-content {
-  --background: #ffffffff;
+  --background: #000000ff;
   display: flex;
   justify-content: center;
   align-items: center;

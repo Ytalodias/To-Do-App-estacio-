@@ -724,19 +724,14 @@ export class TodosPage implements OnInit {
   todos: Todo[] = [];
   API_URL = ''; // URL base da API
 
-  constructor(
+constructor(
     private http: HttpClient,
     private router: Router,
     private modalCtrl: ModalController
   ) {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      this.API_URL = 'http://localhost:5000/api';
-    } else {
-      // Ajuste para IP do PC na mesma rede
-      this.API_URL = `http://${hostname}:5000/api`;
-    }
+    this.API_URL = 'https://todolist-backend-4ya9.onrender.com/api';
   }
+
 
 ngOnInit(): void {
   this.loadTodos();
