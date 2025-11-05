@@ -31,7 +31,7 @@ export class RegisterPage {
 
     const body = { email: this.email, password: this.password };
 
-   this.http.post('http://localhost:5000/api/auth/register', body).subscribe({
+this.http.post('https://todolist-backend-4ya9.onrender.com/api/auth/register', body).subscribe({
   next: (res: any) => {
     console.log('Usuário registrado:', res);
     alert(res.message);

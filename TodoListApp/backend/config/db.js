@@ -1,21 +1,23 @@
-import mysql from "mysql2";
+import pkg from "pg";
 import dotenv from "dotenv";
+dotenv.config();
 
-dotenv.config(); // carrega variáveis do .env
+const { Pool } = pkg;
 
-// Cria a conexão com o banco
-export const db = mysql.createConnection({
-  host: process.env.DB_HOST,       // geralmente localhost
-  user: process.env.DB_USER,       // root
-  password: process.env.DB_PASSWORD || '', // se vazio, passa ''
-  database: process.env.DB_NAME
+export const db = new Pool({
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
+  port: 5432,
+  ssl: { rejectUnauthorized: false },
 });
 
-// Testa a conexão
-db.connect((err) => {
-  if (err) {
+(async () => {
+  try {
+    await db.connect();
+    console.log("✅ Conectado ao PostgreSQL Render!");
+  } catch (err) {
     console.error("Erro ao conectar ao banco:", err);
-  } else {
-    console.log("✅ Conectado ao MariaDB sem senha!");
   }
-});
+})();

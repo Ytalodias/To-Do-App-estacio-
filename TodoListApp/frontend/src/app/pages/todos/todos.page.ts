@@ -200,10 +200,10 @@ export class AddTodoModal {
   </div>
 </ion-content>
   `,
-  styles: [`
+styles: [`
 /* ===== CONTEÚDO DO MODAL ===== */
 ion-content.modal-content {
-  --background: #ffffff;
+  --background: #121212; /* Dark mode como padrão */
   display: flex;
   justify-content: center;
   align-items: center;
@@ -211,6 +211,7 @@ ion-content.modal-content {
   overflow-y: auto;
   padding: 1.5rem;
   position: relative;
+  transition: background 0.3s ease;
 }
 
 /* ===== BOTÃO FECHAR ===== */
@@ -219,27 +220,29 @@ ion-content.modal-content {
   top: 12px;
   right: 12px;
   font-size: 1.6rem;
-  color: #334A80;
+  color: #BB86FC;
   z-index: 10;
+  background: transparent;
 }
 
 /* ===== CONTAINER DO MODAL ===== */
 .modal-wrapper {
   width: 100%;
   max-width: 400px;
-  background: #fff;
+  background: #1E1E1E;
   padding: 2rem;
-  border-radius: 12px;
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  border-radius: 16px;
+  box-shadow: 0 6px 25px rgba(0, 0, 0, 0.5);
   display: flex;
   flex-direction: column;
   gap: 1.2rem;
+  transition: background 0.3s ease, box-shadow 0.3s ease;
 }
 
 /* ===== TÍTULO ===== */
 h1 {
   text-align: center;
-  color: #334A80;
+  color: #BB86FC;
   font-size: 1.8rem;
   font-weight: bold;
   margin-bottom: 1rem;
@@ -252,27 +255,38 @@ h1 {
 
 .input-field, ion-datetime {
   width: 100%;
-  padding: 0.8rem 1rem;
+  padding: 0.9rem 1rem;
   font-size: 1rem;
-  border: 1px solid #000;
+  border: 1px solid #555;
   border-radius: 8px;
-  background-color: #fff;
-  color: #000;
+  background-color: #2A2A2A;
+  color: #FFF;
+  outline: none;
+  transition: border 0.3s ease, background 0.3s ease;
+}
+
+.input-field:focus, ion-datetime:focus {
+  border-color: #BB86FC;
+  background-color: #333;
 }
 
 .input-field::placeholder {
-  color: #000;
-  opacity: 0.7;
+  color: #BBBBBB;
 }
 
 /* ===== BOTÃO SALVAR ===== */
 .save-button {
-  --background: #334A80;
-  --color: #fff;
+  --background: #BB86FC;
+  --color: #121212;
   font-weight: 600;
   --border-radius: 8px;
   margin-top: 1.5rem;
   width: 100%;
+  transition: 0.3s ease;
+}
+
+.save-button:hover {
+  filter: brightness(1.1);
 }
 
 /* ===== RESPONSIVO ===== */
@@ -281,42 +295,42 @@ h1 {
     width: 95%;
     padding: 1.5rem;
   }
-
   h1 {
     font-size: 1.5rem;
   }
 }
 
-/* ===== DARK MODE ===== */
-:host-context(.dark) ion-content.modal-content {
-  --background: #1E1E1E;
+/* ===== LIGHT MODE ===== */
+:host-context(.light) ion-content.modal-content {
+  --background: #F5F5F5;
 }
 
-:host-context(.dark) .modal-wrapper {
-  background: #2C2C2C;
-  box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+:host-context(.light) .modal-wrapper {
+  background: #FFFFFF;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.15);
 }
 
-:host-context(.dark) h1 {
-  color: #BB86FC;
+:host-context(.light) h1 {
+  color: #334A80;
 }
 
-:host-context(.dark) .input-field, 
-:host-context(.dark) ion-datetime {
-  background-color: #3A3A3A;
-  color: #ffffff;
-  border: 1px solid #555;
+:host-context(.light) .input-field,
+:host-context(.light) ion-datetime {
+  background-color: #FFFFFF;
+  color: #000;
+  border: 1px solid #CCC;
 }
 
-:host-context(.dark) .input-field::placeholder {
-  color: #BBBBBB;
+:host-context(.light) .input-field::placeholder {
+  color: #555;
 }
 
-:host-context(.dark) .save-button {
-  --background: #BB86FC;
-  --color: #121212;
+:host-context(.light) .save-button {
+  --background: #334A80;
+  --color: #FFF;
 }
-  `]
+`]
+
 })
 export class EditTodoModal implements OnInit {
   @Input() todo!: Todo;
@@ -399,15 +413,16 @@ export class EditTodoModal implements OnInit {
   align-items: center;
   flex-direction: column;
   padding: 1rem;
-  background: #ffffffff;
+  background: #ffffff; /* CORRETO */
   min-height: 100%;
-  position: relative; /* para posicionar o botão de voltar */
+  position: relative;
 }
+
 
 /* ===== DARK MODE ===== */
 :host-context(.dark) ion-content.modal-content {
-  --background: #121212;           /* fundo interno */
-  --ion-background-color: #121212; /* fundo scroll interno */
+  --background: #121212;
+  --ion-background-color: #121212;
 }
 
 .back-button {

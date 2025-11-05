@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
   styles: [`
 /* Tela toda branca e centralizada */
 ion-content.login-content {
-  --background: #ffffff;
+  --background: #ffffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -145,28 +145,20 @@ h1 {
 
   `]
 })
+
+
 export class LoginPage {
   email = '';
   password = '';
 
-private API_URL = '';
+private API_URL = 'https://todolist-backend-4ya9.onrender.com/api/auth';
 
-constructor(
-  private http: HttpClient,
-  private router: Router,
-  private toastCtrl: ToastController
-) {
-  // Detecta se o app está rodando no navegador do PC ou no celular na mesma rede
-  const hostname = window.location.hostname;
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    // Rodando no PC
-    this.API_URL = 'http://localhost:5000/api/auth';
-  } else {
-    // Rodando em outro dispositivo (celular)
-    this.API_URL = `http://${hostname}:5000/api/auth`;
-  }
-}
 
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toastCtrl: ToastController
+  ) {}
 
   async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const toast = await this.toastCtrl.create({
@@ -178,25 +170,33 @@ constructor(
     await toast.present();
   }
 
-  login() {
-    if (!this.email || !this.password) {
-      this.showToast('Preencha todos os campos!', 'warning');
-      return;
-    }
-
-    const body = { email: this.email, password: this.password };
-
-    this.http.post(`${this.API_URL}/login`, body).subscribe({
-      next: (res: any) => {
-        if (res.token) {
-          localStorage.setItem('token', res.token);
-          this.showToast('Login realizado com sucesso!', 'success');
-          this.router.navigate(['/todos']);
-        } else {
-          this.showToast('Token não recebido do servidor', 'danger');
-        }
-      },
-      error: (err) => this.showToast(err.error?.message || 'Erro ao fazer login', 'danger')
-    });
+login() {
+  if (!this.email || !this.password) {
+    this.showToast('Preencha todos os campos!', 'warning');
+    return;
   }
+
+  const body = { email: this.email, password: this.password };
+
+  // Forçar Content-Type application/json
+  this.http.post(`${this.API_URL}/login`, body, {
+    headers: { 'Content-Type': 'application/json' }
+  }).subscribe({
+    next: (res: any) => {
+      console.log("Resposta do servidor:", res);
+
+      if (res.token) {
+        localStorage.setItem('token', res.token);
+        this.showToast('Login realizado com sucesso!', 'success');
+        this.router.navigate(['/todos']);
+      } else {
+        this.showToast('Token não recebido do servidor', 'danger');
+      }
+    },
+    error: (err) => {
+      console.error("Erro no login:", err);
+      this.showToast(err.error?.message || 'Erro ao fazer login', 'danger');
+    }
+  });
+}
 }
