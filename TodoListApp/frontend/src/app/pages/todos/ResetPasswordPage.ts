@@ -1,10 +1,7 @@
-// src/app/pages/todos/ResetPasswordPage.ts
-
 import { Component } from '@angular/core';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpClientModule, HttpErrorResponse } from '@angular/common/http';
-import { ActivatedRoute } from '@angular/router';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -19,54 +16,54 @@ import { CommonModule } from '@angular/common';
 </ion-header>
 
 <ion-content class="ion-padding">
+  <ion-item>
+    <ion-label position="stacked">Email</ion-label>
+    <ion-input [(ngModel)]="email" type="email" placeholder="Digite seu email"></ion-input>
+  </ion-item>
 
   <ion-item>
-    <ion-label position="stacked">Nova Senha</ion-label>
-    <ion-input [(ngModel)]="newPassword" type="password" placeholder="Digite sua nova senha"></ion-input>
+    <ion-label position="stacked">Resposta da pergunta</ion-label>
+    <ion-input [(ngModel)]="securityAnswer" type="text" placeholder="Digite a resposta"></ion-input>
+  </ion-item>
+
+  <ion-item>
+    <ion-label position="stacked">Nova senha</ion-label>
+    <ion-input [(ngModel)]="newPassword" type="password" placeholder="Digite a nova senha"></ion-input>
   </ion-item>
 
   <ion-button expand="block" (click)="resetPassword()" style="margin-top: 20px;">
-    Alterar Senha
+    Redefinir Senha
   </ion-button>
-
 </ion-content>
-  `,
-  styles: [`
-ion-content { --background: #f5f5f5; }
-ion-item { margin-bottom: 15px; }
-`]
+  `
 })
 export class ResetPasswordPage {
+  email = '';
+  securityAnswer = '';
   newPassword = '';
-  token = '';
 
-  private API_URL = 'https://todolist-backend-4ya9.onrender.com/api';
+  private API_URL = 'https://todolist-backend-4ya9.onrender.com/api/auth';
 
-  constructor(
-    private http: HttpClient,
-    private route: ActivatedRoute,
-    private toastCtrl: ToastController
-  ) {
-    // Captura o token do link (ex: /reset-password/:token)
-    this.token = this.route.snapshot.paramMap.get('token') || '';
-  }
+  constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
-  async showToast(message: string, color: 'success' | 'danger' = 'success') {
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
     const toast = await this.toastCtrl.create({ message, color, duration: 2500, position: 'top' });
     await toast.present();
   }
 
   resetPassword() {
-    if (!this.newPassword) {
-      this.showToast('Digite uma nova senha', 'danger');
+    if (!this.securityAnswer || !this.newPassword) {
+      this.showToast('Preencha todos os campos', 'danger');
       return;
     }
 
-    this.http.post(`${this.API_URL}/reset-password/${this.token}`, { newPassword: this.newPassword })
-      .subscribe({
-        next: (res: any) => this.showToast(res.message || 'Senha redefinida com sucesso!', 'success'),
-        error: (err: HttpErrorResponse) =>
-          this.showToast(err.error?.message || 'Erro ao redefinir senha', 'danger')
-      });
+    this.http.post<{message?: string}>(`${this.API_URL}/reset-password`, {
+      email: this.email,
+      securityAnswer: this.securityAnswer,
+      newPassword: this.newPassword
+    }).subscribe({
+      next: res => this.showToast(res.message || 'Senha redefinida!', 'success'),
+      error: err => this.showToast(err.error?.message || 'Erro ao redefinir senha', 'danger')
+    });
   }
 }

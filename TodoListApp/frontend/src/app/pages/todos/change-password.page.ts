@@ -1,7 +1,7 @@
 import { Component } from '@angular/core';
 import { IonicModule, ToastController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { HttpClient, HttpErrorResponse, HttpClientModule } from '@angular/common/http';
+import { HttpClient, HttpClientModule } from '@angular/common/http';
 import { CommonModule } from '@angular/common';
 
 @Component({
@@ -21,52 +21,42 @@ import { CommonModule } from '@angular/common';
     <ion-input [(ngModel)]="email" type="email" placeholder="Digite seu email"></ion-input>
   </ion-item>
 
+  <ion-item *ngIf="showQuestion">
+    <ion-label position="stacked">{{ securityQuestion }}</ion-label>
+    <ion-input [(ngModel)]="securityAnswer" type="text" placeholder="Digite a resposta"></ion-input>
+  </ion-item>
+
   <ion-button expand="block" (click)="forgotPassword()" style="margin-top: 20px;">
     Enviar Instruções
   </ion-button>
 </ion-content>
-  `,
-  styles: [`
-ion-content { --background: #f5f5f5; }
-ion-item { margin-bottom: 15px; }
-`]
+  `
 })
 export class ChangePasswordPage {
   email = '';
-private API_URL = 'https://todolist-backend-4ya9.onrender.com/api/auth';
+  securityQuestion = '';
+  securityAnswer = '';
+  showQuestion = false;
 
+  private API_URL = 'https://todolist-backend-4ya9.onrender.com/api/auth';
 
   constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
-  // Função para exibir mensagens toast
   async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
-    const toast = await this.toastCtrl.create({ 
-      message, 
-      color, 
-      duration: 2500, 
-      position: 'top' 
-    });
+    const toast = await this.toastCtrl.create({ message, color, duration: 2500, position: 'top' });
     await toast.present();
   }
 
-  // Função para solicitar email de redefinição
   forgotPassword() {
-    if (!this.email) { 
-      this.showToast('Informe seu email', 'warning'); 
-      return; 
-    }
+    if (!this.email) return this.showToast('Informe seu email', 'warning');
 
-    this.http.post(`${this.API_URL}/forgot-password`, { email: this.email })
+    this.http.post<{securityQuestion: string}>(`${this.API_URL}/forgot-password`, { email: this.email })
       .subscribe({
-        next: (res: any) => {
-          // Confirmação de envio
-          this.showToast(res?.message || 'Email enviado com instruções!', 'success');
+        next: res => {
+          this.securityQuestion = res.securityQuestion;
+          this.showQuestion = true;
         },
-        error: (err: HttpErrorResponse) => {
-          // Exibe erro retornado pelo backend ou genérico
-          const msg = err.error?.message || 'Erro ao enviar email';
-          this.showToast(msg, 'danger');
-        }
+        error: err => this.showToast(err.error?.message || 'Usuário não encontrado', 'danger')
       });
   }
 }
