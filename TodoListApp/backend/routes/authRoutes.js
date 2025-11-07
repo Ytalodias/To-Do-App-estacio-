@@ -4,12 +4,11 @@ import { createUser, findUserByEmail, updateUserPassword } from "../models/user.
 
 const router = express.Router();
 
-// === Registro de usuário ===
+// Registro
 router.post("/register", async (req, res) => {
   const { email, password, securityQuestion, securityAnswer } = req.body;
-  if (!email || !password || !securityQuestion || !securityAnswer) {
+  if (!email || !password || !securityQuestion || !securityAnswer)
     return res.status(400).json({ message: "Todos os campos são obrigatórios." });
-  }
 
   const existingUser = await findUserByEmail(email);
   if (existingUser) return res.status(400).json({ message: "Usuário já existe." });
@@ -18,7 +17,7 @@ router.post("/register", async (req, res) => {
   res.status(201).json({ message: "Usuário criado com sucesso." });
 });
 
-// === Esqueci a senha (retorna pergunta secreta) ===
+// Esqueci senha (retorna pergunta secreta)
 router.post("/forgot-password", async (req, res) => {
   const { email } = req.body;
   if (!email) return res.status(400).json({ message: "Informe seu email." });
@@ -29,17 +28,18 @@ router.post("/forgot-password", async (req, res) => {
   res.json({ securityQuestion: user.security_question });
 });
 
-// === Resetar senha com resposta secreta ===
+// Resetar senha
 router.post("/reset-password", async (req, res) => {
   const { email, securityAnswer, newPassword } = req.body;
-  if (!email || !securityAnswer || !newPassword) {
+  if (!email || !securityAnswer || !newPassword)
     return res.status(400).json({ message: "Todos os campos são obrigatórios." });
-  }
 
   const user = await findUserByEmail(email);
   if (!user) return res.status(404).json({ message: "Usuário não encontrado." });
 
-  const isAnswerCorrect = await bcrypt.compare(securityAnswer, user.security_answer);
+  const normalizedAnswer = securityAnswer.trim().toLowerCase(); // <--- normaliza
+  const isAnswerCorrect = await bcrypt.compare(normalizedAnswer, user.security_answer);
+
   if (!isAnswerCorrect) return res.status(401).json({ message: "Resposta incorreta." });
 
   await updateUserPassword(email, newPassword);

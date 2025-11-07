@@ -44,22 +44,24 @@ export class ResetPasswordPage {
 
   constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
-  async showToast(message: string, color: 'success'|'danger'='success'): Promise<void> {
+  async showToast(message: string, color: 'success'|'danger'='success') {
     const toast = await this.toastCtrl.create({ message, color, duration: 2500 });
     await toast.present();
   }
 
-  resetPassword(): void {
+  resetPassword() {
     if (!this.email || !this.securityAnswer || !this.newPassword) {
       this.showToast('Preencha todos os campos', 'danger');
       return;
     }
 
+    const normalizedAnswer = this.securityAnswer.trim().toLowerCase(); // <--- normaliza
+
     this.http.post<{ message: string }>(
       `${this.API_URL}/reset-password`,
       {
         email: this.email,
-        securityAnswer: this.securityAnswer,
+        securityAnswer: normalizedAnswer,
         newPassword: this.newPassword
       }
     ).subscribe({
