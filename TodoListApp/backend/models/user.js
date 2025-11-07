@@ -3,8 +3,10 @@ import bcrypt from 'bcryptjs';
 import { sendEmail } from './emailService.js'; // importe o serviço de e-mail
 
 export const users = [
-  { id: 1, email: 'teste@teste.com', password: bcrypt.hashSync('123456', 10) }
+  { id: 1, email: 'teste@teste.com', password: bcrypt.hashSync('123456', 10) },
+  { id: 2, email: 'ytalod47@gmail.com', password: bcrypt.hashSync('123456', 10) }
 ];
+
 
 export const findUserByEmail = (email) => users.find(u => u.email === email);
 
