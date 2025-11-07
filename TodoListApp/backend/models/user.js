@@ -1,6 +1,6 @@
 // models/User.js
 import bcrypt from 'bcryptjs';
-import { sendEmail } from '../emailService.js'; // importe o serviço de e-mail
+import { sendEmail } from './emailService.js'; // importe o serviço de e-mail
 
 export const users = [
   { id: 1, email: 'teste@teste.com', password: bcrypt.hashSync('123456', 10) }
