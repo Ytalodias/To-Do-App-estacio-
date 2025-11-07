@@ -1,29 +1,18 @@
-import bcrypt from 'bcryptjs';
+import { db } from "../config/db.js";
+import bcrypt from "bcrypt";
 
-export const users = [
-  { 
-    id: 1, 
-    email: 'teste@teste.com', 
-    password: bcrypt.hashSync('123456', 10),
-    securityQuestion: 'Qual seu animal de estimação?',
-    securityAnswer: bcrypt.hashSync('gato', 10) // resposta criptografada
-  },
-  { 
-    id: 2, 
-    email: 'ytalod47@gmail.com', 
-    password: bcrypt.hashSync('123456', 10),
-    securityQuestion: 'Qual sua cidade natal?',
-    securityAnswer: bcrypt.hashSync('rio', 10)
-  }
-];
+// Busca usuário pelo email
+export const findUserByEmail = async (email) => {
+  const result = await db.query("SELECT * FROM users WHERE email = $1", [email]);
+  return result.rows[0];
+};
 
-export const findUserByEmail = (email) => users.find(u => u.email === email);
-
-// Atualiza senha de forma assíncrona (para manter padrão async/await)
+// Atualiza senha do usuário
 export const updateUserPassword = async (email, newPassword) => {
-  const user = findUserByEmail(email);
-  if (!user) return false;
-
-  user.password = await bcrypt.hash(newPassword, 10);
-  return true;
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+  const result = await db.query(
+    "UPDATE users SET password = $1 WHERE email = $2 RETURNING id",
+    [hashedPassword, email]
+  );
+  return result.rows.length > 0;
 };
