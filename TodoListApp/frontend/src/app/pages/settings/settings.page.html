@@ -23,4 +23,9 @@
       <ion-toggle [(ngModel)]="notifications" (ionChange)="toggleNotifications()"></ion-toggle>
     </ion-item>
   </ion-list>
+
+  <!-- Botão de sair -->
+  <ion-button expand="block" color="danger" (click)="logout()" style="margin: 20px 0;">
+    Sair
+  </ion-button>
 </ion-content>

@@ -13,6 +13,12 @@ import { Router } from '@angular/router';
 export class SettingsPage implements OnInit {
   darkMode = false;
   notifications = true;
+logout() {
+  // Aqui você limpa dados do usuário, tokens, etc.
+  console.log("Usuário saiu");
+  // Exemplo: redirecionar para a tela de login
+  this.router.navigate(['/login']);
+}
 
   constructor(private router: Router) {}
 

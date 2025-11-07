@@ -14,7 +14,7 @@ interface Todo {
 
 
 
-//Adicionar Tarefa
+// ===== Adicionar Tarefa =====
 @Component({
   selector: 'app-add-todo-modal',
   standalone: true,
@@ -27,23 +27,41 @@ interface Todo {
     <h1>Nova Tarefa</h1>
 
     <div class="input-container">
-      <input type="text" [(ngModel)]="title" placeholder="Digite o título" class="input-field">
+      <input
+        type="text"
+        [(ngModel)]="title"
+        placeholder="Digite o título"
+        class="input-field"
+      />
     </div>
 
     <div class="input-container">
-      <input type="text" [(ngModel)]="description" placeholder="Digite a descrição" class="input-field">
+      <input
+        type="text"
+        [(ngModel)]="description"
+        placeholder="Digite a descrição"
+        class="input-field"
+      />
     </div>
 
     <div class="input-container">
-      <ion-datetime
-        display-format="DD/MM/YYYY"
-        placeholder="Data alvo"
-        [(ngModel)]="targetDate"
-        class="input-field">
-      </ion-datetime>
+    <ion-datetime
+  presentation="date-time"
+  [(ngModel)]="targetDate"
+  placeholder="Selecione data e hora"
+  class="input-field"
+  display-timezone="offset"
+  value-format="YYYY-MM-DDTHH:mm">
+</ion-datetime>
+
+
+
+
     </div>
 
-    <ion-button expand="block" class="save-button" (click)="add()">Adicionar</ion-button>
+    <ion-button expand="block" class="save-button" (click)="add()">
+      Adicionar
+    </ion-button>
   </div>
 </ion-content>
   `,
@@ -143,30 +161,46 @@ h1 {
 }
   `]
 })
-export class AddTodoModal {
-  title = '';
-  description = '';
-  targetDate?: string;
 
-  constructor(private modalCtrl: ModalController) {}
+     export class AddTodoModal {
+       title = '';
+       description = '';
+       targetDate = new Date().toISOString().slice(0, 16); // Valor padrão: data/hora atual até minutos (ex.: '2025-11-28T14:30')
 
-  dismiss() { this.modalCtrl.dismiss(); }
+       constructor(private modalCtrl: ModalController) {}
 
-  add() {
-    if (!this.title.trim()) { alert('Título é obrigatório!'); return; }
+       add() {
+         if (!this.title.trim()) {
+           alert('Título é obrigatório!');
+           return;
+         }
 
-    let formattedDate: string | null = null;
-    if (this.targetDate) {
-      try { formattedDate = new Date(this.targetDate).toISOString().split('T')[0]; }
-      catch { formattedDate = null; }
-    }
+         if (!this.targetDate) {
+           alert('Data e hora são obrigatórias!');
+           return;
+         }
 
-    this.modalCtrl.dismiss({ title: this.title, description: this.description, targetDate: formattedDate });
-  }
-}
+         // Converte para 'YYYY-MM-DD HH:MM:SS' (hora local)
+         const dt = new Date(this.targetDate);
+         const formatted = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')} ${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:${String(dt.getSeconds()).padStart(2, '0')}`;
+
+         this.modalCtrl.dismiss({
+           title: this.title,
+           description: this.description,
+           targetDate: formatted
+         });
+       }
+
+       dismiss() {
+         this.modalCtrl.dismiss();
+       }
+     }
+     
 
 
 
+
+     
 // Editar Tarefa com dark mode
 @Component({
   selector: 'app-edit-todo-modal',
@@ -188,12 +222,13 @@ export class AddTodoModal {
     </div>
 
     <div class="input-container">
-      <ion-datetime
-        display-format="DD/MM/YYYY"
-        placeholder="Data alvo"
-        [(ngModel)]="targetDate"
-        class="input-field">
-      </ion-datetime>
+   <ion-datetime
+  presentation="date-time"
+  [(ngModel)]="targetDate"
+  placeholder="Selecione data e hora"
+  class="input-field">
+</ion-datetime>
+
     </div>
 
     <ion-button expand="block" class="save-button" (click)="save()">Salvar</ion-button>
@@ -623,7 +658,7 @@ ion-header, ion-toolbar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
+  gap: 0.5rem;            /* reduz gap entre cards */
 }
 
 /* Cards individuais */
@@ -631,11 +666,12 @@ ion-header, ion-toolbar {
   background: #FFFFFF;
   padding: 1.5rem;
   border-radius: 5px;
-  width: 320px;
+  max-width: 320px;
+   width: 90%;
   box-shadow: 0 8px 20px rgba(0,0,0,0.12);
   cursor: pointer;
   transition: transform 0.2s ease, box-shadow 0.2s ease;
-  margin-top:30px;
+  margin-top:10px;
 }
 
 .lembrete-card:hover {
@@ -724,14 +760,20 @@ export class TodosPage implements OnInit {
   todos: Todo[] = [];
   API_URL = ''; // URL base da API
 
-constructor(
+  constructor(
     private http: HttpClient,
     private router: Router,
     private modalCtrl: ModalController
   ) {
-    this.API_URL = 'https://todolist-backend-4ya9.onrender.com/api';
+    const hostname = window.location.hostname;
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      this.API_URL = 'https://todolist-backend-4ya9.onrender.com/api'
+;
+    } else {
+      // Ajuste para IP do PC na mesma rede
+      this.API_URL = `http://${hostname}:5000/api`;
+    }
   }
-
 
 ngOnInit(): void {
   this.loadTodos();
@@ -790,10 +832,11 @@ loadTodos(): void {
       console.log('TODOS RECEBIDOS DO BACKEND:', res);
 
       // Mapear target_date → targetDate e remover horário (opcional)
-      this.todos = res.map(todo => ({
-        ...todo,
-        targetDate: todo.target_date ? todo.target_date.split('T')[0] : undefined
-      }));
+this.todos = res.map(todo => ({
+  ...todo,
+  targetDate: todo.target_date || undefined
+}));
+
     },
     error: err => {
       if ([401, 403].includes(err.status)) {
@@ -860,24 +903,35 @@ calculateCountdown(targetDate?: string): string {
 async openAddModal() {
   localStorage.setItem('openModal', 'add');
 
+  // Verifica o dark mode atualizado do localStorage, não do body
+  const darkModeAtivo = localStorage.getItem('darkMode') === 'true';
+
+  // Garante que o body tenha o estado certo antes de abrir o modal
+  document.body.classList.toggle('dark', darkModeAtivo);
+
   const modal = await this.modalCtrl.create({
     component: AddTodoModal,
-    cssClass: document.body.classList.contains('dark') ? 'dark' : ''
+    cssClass: darkModeAtivo ? 'dark' : 'light'
   });
 
   await modal.present();
+
   const { data } = await modal.onWillDismiss();
   localStorage.removeItem('openModal');
+
   if (data) this.addTodo(data.title, data.description, data.targetDate);
 }
 
+
 async openEditModal(todo: Todo) {
   localStorage.setItem('openModal', `edit-${todo.id}`);
+  const darkModeAtivo = localStorage.getItem('darkMode') === 'true';
+  document.body.classList.toggle('dark', darkModeAtivo);
 
   const modal = await this.modalCtrl.create({
     component: EditTodoModal,
     componentProps: { todo },
-    cssClass: document.body.classList.contains('dark') ? 'dark' : ''
+    cssClass: darkModeAtivo ? 'dark' : 'light'
   });
 
   await modal.present();

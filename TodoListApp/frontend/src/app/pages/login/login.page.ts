@@ -29,7 +29,7 @@ import { CommonModule } from '@angular/common';
     <!-- Links adicionais -->
     <div class="link1">
       <p class="forgot-password">
-        <a routerLink="/forgot-password">Esqueceu a senha?</a>
+   <a routerLink="/forgot-password">Esqueceu a senha?</a>
       </p>
        </div>
 
@@ -50,7 +50,7 @@ import { CommonModule } from '@angular/common';
   styles: [`
 /* Tela toda branca e centralizada */
 ion-content.login-content {
-  --background: #000000ff;
+  --background: #ffffffff;
   display: flex;
   justify-content: center;
   align-items: center;
