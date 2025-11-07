@@ -42,13 +42,16 @@ export class ChangePasswordPage {
 
   constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 
-  async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success') {
+  async showToast(message: string, color: 'success' | 'danger' | 'warning' = 'success'): Promise<void> {
     const toast = await this.toastCtrl.create({ message, color, duration: 2500, position: 'top' });
     await toast.present();
   }
 
-  forgotPassword() {
-    if (!this.email) return this.showToast('Informe seu email', 'warning');
+  forgotPassword(): void {
+    if (!this.email) {
+      this.showToast('Informe seu email', 'warning');
+      return;
+    }
 
     this.http.post<{securityQuestion: string}>(`${this.API_URL}/forgot-password`, { email: this.email })
       .subscribe({
@@ -56,7 +59,9 @@ export class ChangePasswordPage {
           this.securityQuestion = res.securityQuestion;
           this.showQuestion = true;
         },
-        error: err => this.showToast(err.error?.message || 'Usuário não encontrado', 'danger')
+        error: err => {
+          this.showToast(err.error?.message || 'Usuário não encontrado', 'danger');
+        }
       });
   }
 }

@@ -15,11 +15,13 @@ export class RegisterPage {
   email = '';
   password = '';
   confirmPassword = '';
+  securityQuestion = '';
+  securityAnswer = '';
 
   constructor(private http: HttpClient) {}
 
   register() {
-    if (!this.email || !this.password || !this.confirmPassword) {
+    if (!this.email || !this.password || !this.confirmPassword || !this.securityQuestion || !this.securityAnswer) {
       alert("Preencha todos os campos!");
       return;
     }
@@ -29,19 +31,21 @@ export class RegisterPage {
       return;
     }
 
-    const body = { email: this.email, password: this.password };
+    const body = { 
+      email: this.email, 
+      password: this.password,
+      securityQuestion: this.securityQuestion,
+      securityAnswer: this.securityAnswer
+    };
 
-this.http.post('https://todolist-backend-4ya9.onrender.com/api/auth/register', body).subscribe({
-  next: (res: any) => {
-    console.log('Usuário registrado:', res);
-    alert(res.message);
-    window.location.href = '/login'; // redireciona para login
-  },
-  error: (err) => {
-    console.error('Erro ao registrar:', err.error?.message || err);
-    alert(err.error?.message || 'Erro ao registrar');
-  }
-});
-
+    this.http.post('https://todolist-backend-4ya9.onrender.com/api/auth/register', body).subscribe({
+      next: (res: any) => {
+        alert(res.message || 'Cadastro realizado com sucesso!');
+        window.location.href = '/login';
+      },
+      error: (err) => {
+        alert(err.error?.message || 'Erro ao registrar');
+      }
+    });
   }
 }
