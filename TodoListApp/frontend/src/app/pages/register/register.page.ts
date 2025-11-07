@@ -12,15 +12,15 @@ import { HttpClient, HttpClientModule } from '@angular/common/http';
   imports: [IonicModule, FormsModule, RouterModule, HttpClientModule]
 })
 export class RegisterPage {
-  email = '';
-  password = '';
-  confirmPassword = '';
-  securityQuestion = '';
-  securityAnswer = '';
+  email: string = '';
+  password: string = '';
+  confirmPassword: string = '';
+  securityQuestion: string = '';
+  securityAnswer: string = '';
 
   constructor(private http: HttpClient) {}
 
-  register() {
+  register(): void {
     if (!this.email || !this.password || !this.confirmPassword || !this.securityQuestion || !this.securityAnswer) {
       alert("Preencha todos os campos!");
       return;
@@ -38,14 +38,15 @@ export class RegisterPage {
       securityAnswer: this.securityAnswer
     };
 
-    this.http.post('https://todolist-backend-4ya9.onrender.com/api/auth/register', body).subscribe({
-      next: (res: any) => {
-        alert(res.message || 'Cadastro realizado com sucesso!');
-        window.location.href = '/login';
-      },
-      error: (err) => {
-        alert(err.error?.message || 'Erro ao registrar');
-      }
-    });
+    this.http.post('https://todolist-backend-4ya9.onrender.com/api/auth/register', body)
+      .subscribe({
+        next: (res: any) => {
+          alert(res.message || 'Cadastro realizado com sucesso!');
+          window.location.href = '/login';
+        },
+        error: (err) => {
+          alert(err.error?.message || 'Erro ao registrar');
+        }
+      });
   }
 }
