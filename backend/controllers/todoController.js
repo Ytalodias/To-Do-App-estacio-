@@ -51,22 +51,50 @@ export const getTodoById = async (req, res) => {
   }
 };
 
-
-
 // ===== Adicionar nova tarefa =====
-await db.query(
-  `INSERT INTO todos (user_id, title, description, target_date)
-   VALUES ($1, $2, $3, $4)`,
-  [userId, title, description || "", targetDate]
-);
+export const addTodo = async (req, res) => {
+  const userId = req.user.id;
+  const { title, description, targetDate } = req.body;
+
+  try {
+    await db.query(
+      `INSERT INTO todos (user_id, title, description, target_date)
+       VALUES ($1, $2, $3, $4)`,
+      [userId, title, description || "", targetDate]
+    );
+
+    res.status(201).json({ message: "Tarefa adicionada com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao adicionar tarefa:", err);
+    res.status(500).json({ message: "Erro ao adicionar tarefa" });
+  }
+};
 
 // ===== Atualizar tarefa =====
-const result = await db.query(
-  `UPDATE todos
-   SET title = $1, description = $2, target_date = $3
-   WHERE id = $4 AND user_id = $5`,
-  [title, description || "", targetDate, id, userId]
-);
+export const updateTodo = async (req, res) => {
+  const userId = req.user.id;
+  const { id } = req.params;
+  const { title, description, targetDate } = req.body;
+
+  try {
+    const result = await db.query(
+      `UPDATE todos
+       SET title = $1, description = $2, target_date = $3
+       WHERE id = $4 AND user_id = $5`,
+      [title, description || "", targetDate, id, userId]
+    );
+
+    if (result.rowCount === 0) {
+      return res.status(404).json({ message: "Tarefa não encontrada" });
+    }
+
+    res.json({ message: "Tarefa atualizada com sucesso!" });
+  } catch (err) {
+    console.error("Erro ao atualizar tarefa:", err);
+    res.status(500).json({ message: "Erro ao atualizar tarefa" });
+  }
+};
+
 // ===== Excluir tarefa =====
 export const deleteTodo = async (req, res) => {
   const { id } = req.params;
