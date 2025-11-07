@@ -18,9 +18,16 @@ return res.status(400).json({ message: "Usuário já existe" });
 
 ```
 const hashedPassword = await bcrypt.hash(password, 10);
-await db.execute("INSERT INTO users (email, password) VALUES (?, ?)", [email, hashedPassword]);
+const name = email.split('@')[0]; // gera um name básico
+const role = 'user'; // default para novos usuários
+
+await db.execute(
+  "INSERT INTO users (name, email, password, role) VALUES (?, ?, ?, ?)",
+  [name, email, hashedPassword, role]
+);
 
 res.status(201).json({ message: "Usuário criado com sucesso" });
+
 ```
 
 } catch (err) {
