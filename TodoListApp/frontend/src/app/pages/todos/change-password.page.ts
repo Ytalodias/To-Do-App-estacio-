@@ -48,20 +48,25 @@ export class ChangePasswordPage {
   }
 
   forgotPassword(): void {
-    if (!this.email) {
-      this.showToast('Informe seu email', 'danger');
-      return;
-    }
-
-    this.http.post<{ securityQuestion: string }>(
-      `${this.API_URL}/forgot-password`,
-      { email: this.email }
-    ).subscribe({
-      next: res => {
-        this.securityQuestion = res.securityQuestion;
-        this.showQuestion = true;
-      },
-      error: err => this.showToast(err.error?.message || 'Usuário não encontrado', 'danger')
-    });
+  console.log("Botão clicado!", this.email); // <--- teste
+  if (!this.email) {
+    this.showToast('Informe seu email', 'danger');
+    return;
   }
+
+  this.http.post<{ securityQuestion: string }>(
+    `${this.API_URL}/forgot-password`,
+    { email: this.email }
+  ).subscribe({
+    next: res => {
+      console.log("Resposta da API:", res); // <--- teste
+      this.securityQuestion = res.securityQuestion;
+      this.showQuestion = true;
+    },
+    error: err => {
+      console.error("Erro da API:", err); // <--- teste
+      this.showToast(err.error?.message || 'Usuário não encontrado', 'danger')
+    }
+  });
+}
 }
