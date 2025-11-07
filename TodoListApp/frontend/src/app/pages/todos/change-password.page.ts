@@ -33,7 +33,8 @@ ion-item { margin-bottom: 15px; }
 })
 export class ChangePasswordPage {
   email = '';
-  private API_URL = 'https://todolist-backend-4ya9.onrender.com/api'; // Ajuste para sua URL de backend
+private API_URL = 'https://todolist-backend-4ya9.onrender.com/api/auth';
+
 
   constructor(private http: HttpClient, private toastCtrl: ToastController) {}
 

@@ -43,3 +43,12 @@ Email: testuser@example.com
 Senha: Test@1234
 
 Role: user
+
+
+
+
+git checkout atualizacao-login-full
+git add .
+git commit -m "mensagem"
+git pull origin atualizacao-login-full --rebase
+git push origin atualizacao-login-full
