@@ -30,3 +30,16 @@ ytalod47@gmail.com
 senha DB
 
  duBDVCcHzMZ88Zmh4Xo3SAindE6b7J6R
+
+
+
+
+ Usuário de teste
+
+Name: testuser
+
+Email: testuser@example.com
+
+Senha: Test@1234
+
+Role: user
