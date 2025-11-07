@@ -1,0 +1,32 @@
+ cd TodoListApp
+ cd frontend
+
+ionic serve
+
+Sempre que mexer no frontend, faça:
+
+ionic build
+npx cap sync android
+
+
+
+
+diasytalo86@gmail.com
+
+
+ytalod47@gmail.com
+
+
+
+ cd  TodoListApp
+ cd backend
+
+ node server.js
+
+
+
+
+
+senha DB
+
+ duBDVCcHzMZ88Zmh4Xo3SAindE6b7J6R
