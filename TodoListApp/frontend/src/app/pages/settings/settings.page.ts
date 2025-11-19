@@ -1,33 +1,30 @@
 import { Component, OnInit } from '@angular/core';
-import { IonicModule } from '@ionic/angular';
+import { IonicModule, NavController } from '@ionic/angular';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { RouterModule, Router } from '@angular/router';
 
 @Component({
   selector: 'app-settings',
   templateUrl: './settings.page.html',
   styleUrls: ['./settings.page.scss'],
   standalone: true,
-  imports: [IonicModule, FormsModule]
+  imports: [IonicModule, FormsModule, RouterModule]
 })
 export class SettingsPage implements OnInit {
   darkMode = false;
   notifications = true;
-logout() {
-  // Aqui você limpa dados do usuário, tokens, etc.
-  console.log("Usuário saiu");
-  // Exemplo: redirecionar para a tela de login
-  this.router.navigate(['/login']);
-}
 
-  constructor(private router: Router) {}
+  constructor(private router: Router, private navCtrl: NavController) {}
 
   ngOnInit() {
-    // Carrega preferências
+    // 🔥 FORÇA SEMPRE COMEÇAR SEM MODO ESCURO
+    document.body.classList.remove('dark');
+
+    // Carrega preferências salvas
     this.darkMode = localStorage.getItem('darkMode') === 'true';
     this.notifications = localStorage.getItem('notifications') !== 'false';
 
-    // Aplica dark mode
+    // Aplica a configuração do usuário
     this.applyDarkMode();
   }
 
@@ -52,6 +49,15 @@ logout() {
   }
 
   goBack() {
-    this.router.navigate(['/todos']); // Ajuste para a rota anterior
+    this.router.navigate(['/todos']);
+  }
+
+  logout() {
+    console.log("Usuário saiu");
+    this.router.navigate(['/login']);
+  }
+
+  goToResetPassword() {
+    this.router.navigate(['/forgot-password']);
   }
 }

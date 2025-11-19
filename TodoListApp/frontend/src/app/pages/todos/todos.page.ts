@@ -4,6 +4,11 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { HttpClient, HttpClientModule, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { LocalNotifications } from '@capacitor/local-notifications';
+
+
+
+
 
 interface Todo {
   id: number;
@@ -45,18 +50,14 @@ interface Todo {
     </div>
 
     <div class="input-container">
-    <ion-datetime
-  presentation="date-time"
-  [(ngModel)]="targetDate"
-  placeholder="Selecione data e hora"
-  class="input-field"
-  display-timezone="offset"
-  value-format="YYYY-MM-DDTHH:mm">
-</ion-datetime>
-
-
-
-
+      <ion-datetime
+        presentation="date-time"
+        [(ngModel)]="targetDate"
+        placeholder="Selecione data e hora"
+        class="input-field"
+        display-timezone="offset"
+        value-format="YYYY-MM-DDTHH:mm:ss">
+      </ion-datetime>
     </div>
 
     <ion-button expand="block" class="save-button" (click)="add()">
@@ -161,42 +162,40 @@ h1 {
 }
   `]
 })
+export class AddTodoModal {
+  title = '';
+  description = '';
+  // Valor padrão: data/hora atual completa até segundos
+  targetDate = new Date().toISOString().slice(0, 19);
 
-     export class AddTodoModal {
-       title = '';
-       description = '';
-       targetDate = new Date().toISOString().slice(0, 16); // Valor padrão: data/hora atual até minutos (ex.: '2025-11-28T14:30')
+  constructor(private modalCtrl: ModalController) {}
 
-       constructor(private modalCtrl: ModalController) {}
+  add() {
+    if (!this.title.trim()) {
+      alert('Título é obrigatório!');
+      return;
+    }
 
-       add() {
-         if (!this.title.trim()) {
-           alert('Título é obrigatório!');
-           return;
-         }
+    if (!this.targetDate) {
+      alert('Data e hora são obrigatórias!');
+      return;
+    }
 
-         if (!this.targetDate) {
-           alert('Data e hora são obrigatórias!');
-           return;
-         }
+    // Converte para 'YYYY-MM-DD HH:MM:SS' no horário local
+    const dt = new Date(this.targetDate);
+    const formatted = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}:${String(dt.getSeconds()).padStart(2,'0')}`;
 
-         // Converte para 'YYYY-MM-DD HH:MM:SS' (hora local)
-         const dt = new Date(this.targetDate);
-         const formatted = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2, '0')}-${String(dt.getDate()).padStart(2, '0')} ${String(dt.getHours()).padStart(2, '0')}:${String(dt.getMinutes()).padStart(2, '0')}:${String(dt.getSeconds()).padStart(2, '0')}`;
+    this.modalCtrl.dismiss({
+      title: this.title,
+      description: this.description,
+      targetDate: formatted
+    });
+  }
 
-         this.modalCtrl.dismiss({
-           title: this.title,
-           description: this.description,
-           targetDate: formatted
-         });
-       }
-
-       dismiss() {
-         this.modalCtrl.dismiss();
-       }
-     }
-     
-
+  dismiss() {
+    this.modalCtrl.dismiss();
+  }
+}
 
 
 
@@ -366,7 +365,10 @@ h1 {
 }
 `]
 
+
+
 })
+
 export class EditTodoModal implements OnInit {
   @Input() todo!: Todo;
   title = '';
@@ -393,26 +395,23 @@ export class EditTodoModal implements OnInit {
       return;
     }
 
-    let formattedDate: string | null = null;
-    if (this.targetDate) {
-      try {
-        formattedDate = new Date(this.targetDate).toISOString().split('T')[0];
-      } catch {
-        formattedDate = null;
-      }
+    if (!this.targetDate) {
+      alert('Data e hora são obrigatórias!');
+      return;
     }
+
+    // Converte para 'YYYY-MM-DD HH:MM:SS' no horário local
+    const dt = new Date(this.targetDate);
+    const formatted = `${dt.getFullYear()}-${String(dt.getMonth() + 1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')} ${String(dt.getHours()).padStart(2,'0')}:${String(dt.getMinutes()).padStart(2,'0')}:${String(dt.getSeconds()).padStart(2,'0')}`;
 
     this.modalCtrl.dismiss({
       title: this.title,
       description: this.description,
-      targetDate: formattedDate
+      targetDate: formatted
     });
   }
 }
 
-
-
-//Pagina de Detalhes
 
 @Component({
   selector: 'app-todo-details-modal',
@@ -421,45 +420,53 @@ export class EditTodoModal implements OnInit {
   template: `
 <ion-content class="modal-content">
 
-  <!-- Botão de voltar manual -->
+  <!-- Botão de voltar -->
   <ion-button class="back-button" fill="clear" (click)="dismiss()">
     ←
   </ion-button>
 
- 
   <div class="todo-card">
-    <h2>{{todo.title}}</h2>
-    <p>{{todo.description}}</p>
-    <p *ngIf="todo.targetDate" class="target-date">
-      Meta: {{todo.targetDate}} ({{calculateCountdown(todo.targetDate!)}})
-    </p>
-  </div>
+    <h2 class="todo-title">{{ todo.title }}</h2>
 
-  <div class="button-group">
+    <!-- LINHA DE SEPARAÇÃO -->
+    <div class="divider"></div>
+
+    <p>{{ todo.description }}</p>
+
+    <!-- DATA COM CONTAINER ESCURO -->
+    <div *ngIf="todo.targetDate" class="target-date-container">
+      <p class="target-date">
+         {{ formatDateDMY(todo.targetDate!) }} ({{ calculateCountdown(todo.targetDate!) }})
+      </p>
+    </div>
+
+    <!-- BOTÕES -->
+    <div class="button-group">
       <ion-button class="editar" (click)="edit()">Editar</ion-button>
       <ion-button color="danger" (click)="remove()">Excluir</ion-button>
     </div>
+  </div>
+
 </ion-content>
   `,
   styles: [`
+/* ===== CONTAINER GERAL ===== */
 .modal-content {
   display: flex;
-  justify-content: center;
-  align-items: center;
   flex-direction: column;
+  align-items: center;
   padding: 1rem;
-  background: #ffffff; /* CORRETO */
-  min-height: 100%;
+  background: #ffffff;
+  min-height: 100vh;
   position: relative;
 }
 
-
-/* ===== DARK MODE ===== */
 :host-context(.dark) ion-content.modal-content {
   --background: #121212;
   --ion-background-color: #121212;
 }
 
+/* ===== BOTÃO VOLTAR ===== */
 .back-button {
   position: absolute;
   top: 15px;
@@ -468,61 +475,82 @@ export class EditTodoModal implements OnInit {
   color: #414D64;
   --padding-start: 0;
   --padding-end: 0;
-  --border-radius: 12px;
 }
 
+/* ===== CARD ===== */
 .todo-card {
   background: #EBEBEB;
-  padding: 1.5rem;
-  border-radius: 16px;
+  padding: 1.7rem;
+  border-radius: 18px;
   width: 100%;
-  max-width: 300px;
-  min-height: 200px;
-  box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+  max-width: 330px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.10);
+  margin: 90px auto 0;
   text-align: center;
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  margin-top:120px;
-  margin-left:40px;
 }
 
-h2 {
-  font-size: 1.5rem;
+/* ===== LINHA DE SEPARAÇÃO ===== */
+.divider {
+  width: 80%;
+  height: 1px;
+  background: #b7b7b7;
+  margin: 0.5rem auto;
+  border-radius: 1px;
+}
+
+/* ===== TÍTULO ===== */
+.todo-title {
+  font-size: 1.4rem;
   font-weight: 700;
-  color: #363636;
+  color: #2f2f2f;
   margin: 0;
-  word-wrap: break-word;
+  word-break: break-word;
+  overflow-wrap: break-word;
 }
 
+/* ===== TEXTO ===== */
 p {
   font-size: 1rem;
-  color: #4b5563;
+  color: #212122ff;
   margin: 0;
   word-wrap: break-word;
 }
 
-.target-date {
-  font-weight: 600;
-  color: #252829ff;
+/* ===== DATA COM CONTAINER ESCURO ===== */
+.target-date-container {
+  background-color: #585757ff;
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  margin-top: 2rem;
+  display: inline-block;
+  color: #ffffff;
 }
 
+.target-date-container .target-date {
+  margin: 0;
+  font-weight: 600;
+  font-size: 1rem;
+  color: inherit;
+}
+
+/* ===== BOTÕES ===== */
 .button-group {
   display: flex;
-  justify-content: space-between;
-  gap: 0.5rem;
-  margin-top: auto; /* empurra os botões para baixo */
-  height:30px;
-  width:300px;
-  margin-top:30px;
-  margin-left:40px;
-  border:none;
+  justify-content: center;
+  gap: 0.8rem;
+  width: 100%;
+  max-width: 330px;
+  margin: 30px auto 0;
 }
 
 .button-group ion-button {
   flex: 1;
-  --border-radius: 12px;
+  --border-radius: 14px;
   font-weight: 600;
+  height: 45px;
   box-shadow: 0 4px 12px rgba(0,0,0,0.1);
   transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -532,55 +560,116 @@ p {
   box-shadow: 0 6px 16px rgba(0,0,0,0.15);
 }
 
-/* Responsividade */
+/* ===== RESPONSIVIDADE ===== */
 @media (max-width: 480px) {
   .todo-card {
-    padding: 1rem;
+    max-width: 90%;
+    padding: 1.2rem;
   }
-  h2 {
+
+  .todo-title {
     font-size: 1.3rem;
   }
+
   p {
     font-size: 0.95rem;
   }
+
   .button-group {
     flex-direction: column;
+    max-width: 90%;
   }
+
   .button-group ion-button {
     width: 100%;
   }
 }
   `]
 })
+
 export class TodoDetailsModal {
   @Input() todo!: Todo;
 
   constructor(private modalCtrl: ModalController) {}
 
-  dismiss(data?: any) { this.modalCtrl.dismiss(data); }
-
-  edit() { this.modalCtrl.dismiss({ action: 'edit', todo: this.todo }); }
-
-  remove() { 
-    if(confirm('Deseja realmente excluir esta tarefa?')) 
-      this.modalCtrl.dismiss({ action: 'delete', todo: this.todo }); 
+  dismiss(data?: any) { 
+    this.modalCtrl.dismiss(data); 
   }
 
+  edit() { 
+    this.modalCtrl.dismiss({ action: 'edit', todo: this.todo }); 
+  }
+
+  remove() { 
+    if (confirm('Deseja realmente excluir esta tarefa?')) {
+      this.modalCtrl.dismiss({ action: 'delete', todo: this.todo }); 
+    }
+  }
+
+  // ====================== COUNTDOWN ======================
   calculateCountdown(targetDate?: string): string {
-    if (!targetDate) return '';
-    
-    const parts = targetDate.split('-');
-    const target = new Date(+parts[0], +parts[1]-1, +parts[2]); // Ano, Mês (0-11), Dia
-    
-    const today = new Date();
-    today.setHours(0,0,0,0);
-    
-    const diff = target.getTime() - today.getTime();
+    if (!targetDate) return "";
+
+    // Remove timezone automático (+3)
+    const parsed = this.parseDateUTC(targetDate);
+    if (!parsed) return "Data inválida";
+
+    const target = new Date(parsed.year, parsed.month - 1, parsed.day);
+
+    const now = new Date();
+    now.setHours(0, 0, 0, 0);
+
+    const diff = target.getTime() - now.getTime();
     const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-    return days < 0 ? 'Vencido' : `${days} dia${days > 1 ? 's' : ''}`;
+
+    if (days < 0) return "Concluído";
+    if (days === 0) return "Hoje";
+
+    return `${days} dia${days > 1 ? "s" : ""}`;
+  }
+
+  // ====================== FORMATAR DATA EXIBIDA ======================
+  formatDateDMY(dateString: string): string {
+    const d = this.parseDateUTC(dateString);
+    if (!d) return "Data inválida";
+
+    const dia = d.day.toString().padStart(2, '0');
+    const mes = d.month.toString().padStart(2, '0');
+    const ano = d.year;
+
+    const h = d.hour.toString().padStart(2, '0');
+    const m = d.minute.toString().padStart(2, '0');
+
+    return `${dia}/${mes}/${ano} ${h}:${m}`;
+  }
+
+  // ====================== PARSER SEM CONVERSÃO DE FUSO ======================
+  private parseDateUTC(dateString: string) {
+    if (!dateString) return null;
+
+    // Formato pode vir com " " ou "T"
+    let [datePart, timePart] = dateString.split(/[\sT]/);
+
+    if (!datePart || !timePart) return null;
+
+    const [year, month, day] = datePart.split("-").map(Number);
+    const [hour, minute] = timePart.split(":").map(Number);
+
+    if (!year || !month || !day) return null;
+
+    return { year, month, day, hour, minute };
   }
 }
 
+interface Todo {
+  id: number;
+  title: string;
+  description: string;
+  targetDate?: string;
+}
+
+
+//pagina Principal
 @Component({
   selector: 'app-todos',
   standalone: true,
@@ -602,12 +691,14 @@ export class TodoDetailsModal {
 
   <div class="lembretes-container">
     <div class="lembrete-card" *ngFor="let todo of todos" (click)="openDetails(todo)">
-      <div class="lembrete-header">
-        <div class="lembrete-titulo">{{todo.title}}</div>
-        <div *ngIf="todo.targetDate" class="lembrete-meta">
-          {{ calculateCountdown(todo.targetDate) }}
-        </div>
-      </div>
+     <div class="lembrete-header">
+  <div class="lembrete-titulo">{{todo.title}}</div>
+  <div *ngIf="todo.targetDate" class="lembrete-meta">
+{{ calculateCountdown(todo.targetDate) }}
+
+  </div>
+</div>
+
     </div>
   </div>
 
@@ -684,17 +775,25 @@ ion-header, ion-toolbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  flex-wrap: wrap;
+  width: 100%;
   gap: 0.5rem;
+  flex-wrap: nowrap; /* 👈 impede quebra de linha */
 }
+
 
 /* Título do lembrete */
 .lembrete-titulo {
   font-size: 1.5rem;
   font-weight: 700;
   color: #334A80;
-  word-break: break-word;
+
+  /* 👇 aplica o corte de texto com "..." */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 75%; /* evita que colida com a data */
 }
+
 
 /* Contagem de dias */
 .lembrete-meta {
@@ -758,7 +857,7 @@ ion-fab-button {
 
 export class TodosPage implements OnInit {
   todos: Todo[] = [];
-  API_URL = ''; // URL base da API
+  API_URL = '';
 
   constructor(
     private http: HttpClient,
@@ -766,47 +865,52 @@ export class TodosPage implements OnInit {
     private modalCtrl: ModalController
   ) {
     const hostname = window.location.hostname;
+
     if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      this.API_URL = 'https://todolist-backend-4ya9.onrender.com/api'
-;
+      this.API_URL = 'https://todolist-backend-4ya9.onrender.com/api';
     } else {
-      // Ajuste para IP do PC na mesma rede
       this.API_URL = `http://${hostname}:5000/api`;
     }
   }
 
-ngOnInit(): void {
-  this.loadTodos();
-
-  // Aplica dark mode se estava ativo
-  const darkMode = localStorage.getItem('darkMode') === 'true';
-document.body.classList.toggle('dark', darkMode);
-
-
-  // Atualiza dark mode se mudar nas configurações enquanto estiver na página
-window.addEventListener('storage', () => {
-  const dark = localStorage.getItem('darkMode') === 'true';
-  document.body.classList.toggle('dark', dark);
-});
-
-  // Reabrir modal caso algum estivesse aberto
-  setTimeout(() => {
-    const openModal = localStorage.getItem('openModal');
-    if (!openModal) return;
-
-    if (openModal === 'add') {
-      this.openAddModal();
-    } else if (openModal.startsWith('edit-')) {
-      const id = parseInt(openModal.split('-')[1], 10);
-      const todo = this.todos.find(t => t.id === id);
-      if (todo) this.openEditModal(todo);
-    } else if (openModal.startsWith('details-')) {
-      const id = parseInt(openModal.split('-')[1], 10);
-      const todo = this.todos.find(t => t.id === id);
-      if (todo) this.openDetails(todo);
+  async ngOnInit(): Promise<void> {
+    // ===== PERMISSÃO PARA NOTIFICAÇÕES =====
+    const perm = await LocalNotifications.requestPermissions();
+    if (perm.display === 'granted') {
+      console.log('✅ Permissão concedida para notificações.');
+    } else {
+      console.warn('❌ Permissão negada.');
     }
-  }, 500);
-}
+
+    this.loadTodos();
+
+    // ===== DARK MODE =====
+    const darkMode = localStorage.getItem('darkMode') === 'true';
+    document.body.classList.toggle('dark', darkMode);
+
+    window.addEventListener('storage', () => {
+      const dark = localStorage.getItem('darkMode') === 'true';
+      document.body.classList.toggle('dark', dark);
+    });
+
+    // ===== REABRIR MODAIS =====
+    setTimeout(() => {
+      const openModal = localStorage.getItem('openModal');
+      if (!openModal) return;
+
+      if (openModal === 'add') {
+        this.openAddModal();
+      } else if (openModal.startsWith('edit-')) {
+        const id = parseInt(openModal.split('-')[1], 10);
+        const todo = this.todos.find(t => t.id === id);
+        if (todo) this.openEditModal(todo);
+      } else if (openModal.startsWith('details-')) {
+        const id = parseInt(openModal.split('-')[1], 10);
+        const todo = this.todos.find(t => t.id === id);
+        if (todo) this.openDetails(todo);
+      }
+    }, 500);
+  }
 
   private getAuthHeaders(): { headers: HttpHeaders } | null {
     const token = localStorage.getItem('token');
@@ -815,6 +919,7 @@ window.addEventListener('storage', () => {
       this.router.navigate(['/login']);
       return null;
     }
+
     return { headers: new HttpHeaders({ Authorization: `Bearer ${token}` }) };
   }
 
@@ -823,44 +928,54 @@ window.addEventListener('storage', () => {
     this.router.navigate(['/login']);
   }
 
-loadTodos(): void {
-  const headers = this.getAuthHeaders();
-  if (!headers) return;
+  // ====================== CARREGAR TODOS ======================
+  loadTodos(): void {
+    const headers = this.getAuthHeaders();
+    if (!headers) return;
 
-  this.http.get<any[]>(`${this.API_URL}/todos`, headers).subscribe({
-    next: res => {
-      console.log('TODOS RECEBIDOS DO BACKEND:', res);
+    this.http.get<any[]>(`${this.API_URL}/todos`, headers).subscribe({
+      next: res => {
+        console.log('TODOS RECEBIDOS DO BACKEND:', res);
 
-      // Mapear target_date → targetDate e remover horário (opcional)
-this.todos = res.map(todo => ({
-  ...todo,
-  targetDate: todo.target_date || undefined
-}));
+        this.todos = res.map(todo => ({
+          ...todo,
+          description: todo.description || '',
+          targetDate: todo.targetDate
+        }));
 
-    },
-    error: err => {
-      if ([401, 403].includes(err.status)) {
-        alert('Token inválido ou expirado. Faça login novamente.');
-        this.logout();
-      } else {
-        alert(err.error?.message || 'Erro ao carregar tarefas');
+        this.todos.forEach(t => this.scheduleNotification(t));
+      },
+      error: err => {
+        if ([401, 403].includes(err.status)) {
+          alert('Token inválido ou expirado. Faça login novamente.');
+          this.logout();
+        } else {
+          alert(err.error?.message || 'Erro ao carregar tarefas');
+        }
       }
-    }
-  });
-}
+    });
+  }
 
-
+  // ====================== ADICIONAR ======================
   addTodo(title: string, description: string, targetDate?: string): void {
     const headers = this.getAuthHeaders();
     if (!headers) return;
 
     this.http.post(`${this.API_URL}/todos`, { title, description, targetDate }, headers)
       .subscribe({
-        next: () => this.loadTodos(),
-        error: err => alert(err.error?.message || 'Erro ao adicionar tarefa')
+        next: async (res: any) => {
+          console.log('✅ Tarefa adicionada:', res);
+          await this.scheduleNotification(res);
+          this.loadTodos();
+        },
+        error: err => {
+          console.error('❌ Erro ao adicionar tarefa:', err);
+          alert(err.error?.message || 'Erro ao adicionar tarefa');
+        }
       });
   }
 
+  // ====================== ATUALIZAR ======================
   updateTodo(id: number, title: string, description: string, targetDate?: string): void {
     const headers = this.getAuthHeaders();
     if (!headers) return;
@@ -872,6 +987,7 @@ this.todos = res.map(todo => ({
       });
   }
 
+  // ====================== EXCLUIR ======================
   deleteTodo(id: number): void {
     const headers = this.getAuthHeaders();
     if (!headers) return;
@@ -883,82 +999,125 @@ this.todos = res.map(todo => ({
       });
   }
 
-calculateCountdown(targetDate?: string): string {
-  if (!targetDate) return '';
-  
-  // targetDate = 'YYYY-MM-DD'
-  const parts = targetDate.split('-');
-  const target = new Date(+parts[0], +parts[1]-1, +parts[2]); // Ano, Mês (0-11), Dia
-  
-  const today = new Date();
-  // Zerar horas para contar apenas dias
-  today.setHours(0,0,0,0);
-  
-  const diff = target.getTime() - today.getTime();
-  const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
-  return days < 0 ? 'Vencido' : `${days} dia${days > 1 ? 's' : ''}`;
-}
+  // ====================== COUNTDOWN ======================
+  calculateCountdown(targetDate?: string): string {
+    if (!targetDate) return '';
 
-// ===== Métodos de modais =====
-async openAddModal() {
-  localStorage.setItem('openModal', 'add');
+    const target = new Date(targetDate);
+    const now = new Date();
 
-  // Verifica o dark mode atualizado do localStorage, não do body
-  const darkModeAtivo = localStorage.getItem('darkMode') === 'true';
+    const diff = target.getTime() - now.getTime();
+    const days = Math.ceil(diff / (1000 * 60 * 60 * 24));
 
-  // Garante que o body tenha o estado certo antes de abrir o modal
-  document.body.classList.toggle('dark', darkModeAtivo);
+    if (days < 0) return 'Concluído';
+    if (days === 0) return 'Hoje';
+    return `${days} dia${days > 1 ? 's' : ''}`;
+  }
 
-  const modal = await this.modalCtrl.create({
-    component: AddTodoModal,
-    cssClass: darkModeAtivo ? 'dark' : 'light'
+  // ====================== PARSER UTC ======================
+  private parseDateUTC(dateString: string) {
+    const match = dateString.match(
+      /^(\d{4})-(\d{2})-(\d{2}) (\d{2}):(\d{2}):(\d{2})\+(\d{2})$/
+    );
+
+    if (!match) {
+      console.warn('❌ Formato de data inválido:', dateString);
+      return null;
+    }
+
+    return {
+      year: Number(match[1]),
+      month: Number(match[2]),
+      day: Number(match[3]),
+      hour: Number(match[4]),
+      minute: Number(match[5])
+    };
+  }
+
+  // ====================== NOTIFICAÇÃO ======================
+async scheduleNotification(todo: any) {
+  if (!todo.targetDate) return;
+
+  // O JS já converte automaticamente +00 para horário local
+  const localDate = new Date(todo.targetDate);
+
+  // Se estiver no passado → ignora
+  if (localDate.getTime() <= Date.now()) {
+    console.log("⏩ Ignorando notificação antiga:", localDate);
+    return;
+  }
+
+  await LocalNotifications.schedule({
+    notifications: [
+      {
+        id: todo.id,
+        title: '📅 Lembrete!',
+        body: `${todo.title} - ${todo.description}`,
+        schedule: { at: localDate },
+        sound: 'default'
+      }
+    ]
   });
 
-  await modal.present();
-
-  const { data } = await modal.onWillDismiss();
-  localStorage.removeItem('openModal');
-
-  if (data) this.addTodo(data.title, data.description, data.targetDate);
+  console.log("🔔 Notificação agendada para:", localDate);
 }
 
 
-async openEditModal(todo: Todo) {
-  localStorage.setItem('openModal', `edit-${todo.id}`);
-  const darkModeAtivo = localStorage.getItem('darkMode') === 'true';
-  document.body.classList.toggle('dark', darkModeAtivo);
+  // ====================== MODAIS ======================
+  async openAddModal() {
+    localStorage.setItem('openModal', 'add');
 
-  const modal = await this.modalCtrl.create({
-    component: EditTodoModal,
-    componentProps: { todo },
-    cssClass: darkModeAtivo ? 'dark' : 'light'
-  });
+    const darkMode = localStorage.getItem('darkMode') === 'true';
+    document.body.classList.toggle('dark', darkMode);
 
-  await modal.present();
-  const { data } = await modal.onWillDismiss();
-  localStorage.removeItem('openModal');
-  if (data) this.updateTodo(todo.id, data.title, data.description, data.targetDate);
-}
+    const modal = await this.modalCtrl.create({
+      component: AddTodoModal,
+      cssClass: darkMode ? 'dark' : 'light'
+    });
 
-async openDetails(todo: Todo) {
-  localStorage.setItem('openModal', `details-${todo.id}`);
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    localStorage.removeItem('openModal');
 
-  const modal = await this.modalCtrl.create({
-    component: TodoDetailsModal,
-    componentProps: { todo },
-    cssClass: document.body.classList.contains('dark') ? 'dark' : ''
-  });
+    if (data) this.addTodo(data.title, data.description, data.targetDate);
+  }
 
-  await modal.present();
-  const { data } = await modal.onWillDismiss();
-  localStorage.removeItem('openModal');
-  if (!data) return;
-  if (data.action === 'edit') this.openEditModal(data.todo);
-  if (data.action === 'delete') this.deleteTodo(data.todo.id);
-}
+  async openEditModal(todo: Todo) {
+    localStorage.setItem('openModal', `edit-${todo.id}`);
+    const darkMode = localStorage.getItem('darkMode') === 'true';
+    document.body.classList.toggle('dark', darkMode);
 
-// ===== Navegação para Configurações =====
-goToSettings(): void {
-  this.router.navigate(['/settings']);
-}
+    const modal = await this.modalCtrl.create({
+      component: EditTodoModal,
+      componentProps: { todo },
+      cssClass: darkMode ? 'dark' : 'light'
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    localStorage.removeItem('openModal');
+    if (data) this.updateTodo(todo.id, data.title, data.description, data.targetDate);
+  }
+
+  async openDetails(todo: Todo) {
+    localStorage.setItem('openModal', `details-${todo.id}`);
+
+    const modal = await this.modalCtrl.create({
+      component: TodoDetailsModal,
+      componentProps: { todo },
+      cssClass: document.body.classList.contains('dark') ? 'dark' : ''
+    });
+
+    await modal.present();
+    const { data } = await modal.onWillDismiss();
+    localStorage.removeItem('openModal');
+
+    if (!data) return;
+    if (data.action === 'edit') this.openEditModal(data.todo);
+    if (data.action === 'delete') this.deleteTodo(data.todo.id);
+  }
+
+  goToSettings(): void {
+    this.router.navigate(['/settings']);
+  }
 }

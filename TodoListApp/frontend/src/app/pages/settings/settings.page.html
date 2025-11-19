@@ -1,9 +1,8 @@
 <ion-header>
   <ion-toolbar>
-    <!-- Botão de voltar -->
     <ion-buttons slot="start">
       <ion-button (click)="goBack()" class="back-button">
-        ← Voltar
+        ← 
       </ion-button>
     </ion-buttons>
 
@@ -18,14 +17,11 @@
       <ion-toggle [checked]="darkMode" (ionChange)="toggleDarkMode()"></ion-toggle>
     </ion-item>
 
-    <ion-item>
-      <ion-label>Notificações</ion-label>
-      <ion-toggle [(ngModel)]="notifications" (ionChange)="toggleNotifications()"></ion-toggle>
-    </ion-item>
+ 
   </ion-list>
 
-  <!-- Botão de sair -->
-  <ion-button expand="block" color="danger" (click)="logout()" style="margin: 20px 0;">
-    Sair
-  </ion-button>
-</ion-content>
+
+
+<ion-button class="logout-button" (click)="logout()">
+  Sair
+</ion-button>

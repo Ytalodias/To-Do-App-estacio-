@@ -3,13 +3,42 @@
   padding: 1rem;
   background: #F5F5F7;
   min-height: 100%;
+
+  ion-list {
+    background: #F5F5F7;
+    border-radius: 16px;
+    padding: 8px 0;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    margin-top: 1rem;
+
+    ion-item {
+      --background: #FFFFFF;
+      --ion-item-background: #FFFFFF;
+      --color: #334A80;
+      --ion-item-text-color: #334A80;
+      --border-radius: 12px;
+      margin: 6px 12px;
+
+      &::part(native),
+      &::part(native) ion-label {
+        background-color: #FFFFFF !important;
+        color: #334A80 !important;
+      }
+    }
+  }
+
+  ion-toggle {
+    --background: #CCCCCC;
+    --handle-background: #FFFFFF;
+
+    &::part(label) {
+      color: #334A80 !important;
+    }
+  }
 }
 
-.settings-content::part(scroll) {
-  background: #F5F5F7;
-}
-
-ion-header, ion-toolbar {
+ion-header,
+ion-toolbar {
   --background: #FFFFFF;
   --border-width: 0;
   --border-color: transparent;
@@ -24,79 +53,111 @@ ion-title {
 .back-button {
   --color: #414D64;
   font-weight: 600;
+
+  /* AUMENTA O BOTÃO */
+font-size: 1.6rem;
+height: 48px;
+width: 48px;
+padding: 8px 14px;           /* deixa ele mais largo */
+  border-radius: 10px;    /* deixa mais bonito */
 }
 
-/* ================= ION-ITEM NORMAL ================= */
-ion-item {
-  --background: #FFFFFF;          /* fundo principal */
-  --ion-item-background: #FFFFFF; /* fundo do shadow DOM interno */
-  --color: #334A80;               /* cor do texto */
-  --ion-item-text-color: #334A80; /* cor do shadow DOM interno */
-  --border-radius: 12px;
-  margin-bottom: 12px;
+
+
+/* ================= DARK MODE ================= */
+:host-context(.dark) .logout-button {
+  --background: #FF3B30;    /* mantém vermelho no dark mode */
+  color: #FFFFFF;
 }
 
-/* partes internas do shadow DOM do item */
-ion-item::part(native),
-ion-item::part(native) ion-label {
-  background-color: #FFFFFF !important;
-  color: #334A80 !important;
+
+
+/* ================= DARK MODE ================= */
+:host-context(.dark) {
+  .settings-content {
+    background: #121212;
+    --background: #121212; /* fundo do ion-content */
+    
+    ion-list {
+      background: #1E1E1E;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+
+      ion-item {
+        --background: #1E1E1E;
+        --ion-item-background: #1E1E1E;
+        --color: #E0E0E0;
+        --ion-item-text-color: #E0E0E0;
+        --border-radius: 12px;
+        margin: 6px 12px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.5);
+
+        &::part(native),
+        &::part(native) ion-label {
+          background-color: #1E1E1E !important;
+          color: #E0E0E0 !important;
+        }
+      }
+    }
+
+    ion-toggle {
+      --background: #444444;
+      --handle-background: #BB86FC;
+
+      &::part(label) {
+        color: #E0E0E0 !important;
+      }
+    }
+  }
+
+  ion-header,
+  ion-toolbar {
+    --background: #1E1E1E;
+  }
+
+  ion-title {
+    color: #E0E0E0;
+  }
+
+  .back-button {
+    --color: #BB86FC;
+  }
+
+
+}/* ================= BOTÕES ================= */
+.reset-password-button,
+.logout-button {
+  display: block;
+  margin: 2rem auto 0 auto;  /* 2rem topo, auto horizontal, 0 embaixo */
+  width: 160px;              /* largura fixa */
+  height: 38px;              /* altura menor */
+  font-size: 0.95rem;        /* tamanho do texto */
+  --border-radius: 12px;     /* cantos arredondados */
+  --box-shadow: 0 2px 6px rgba(0,0,0,0.2);
 }
 
-/* toggle dentro do item */
-ion-toggle {
-  --background: #CCCCCC;
-  --handle-background: #FFFFFF;
+/* Mantém o espaço entre eles */
+.logout-button {
+  margin-top: 12px;  /* distância pequena apenas do botão acima */
 }
 
-ion-toggle::part(label) {
-  color: #334A80 !important;
+/* Cor específica para cada botão */
+.reset-password-button {
+  --background: #467DA9;  /* azul */
+  color: #fff;
+}
+
+.logout-button {
+  --background: #D32F2F;  /* vermelho */
+  color: #fff;
 }
 
 /* ================= DARK MODE ================= */
-:host-context(.dark) .settings-content {
-  background: #121212;
-}
+:host-context(.dark) {
+  .reset-password-button {
+    --background: #3A5F8D;
+  }
 
-:host-context(.dark) .settings-content::part(scroll) {
-  background: #121212;
-}
-
-:host-context(.dark) ion-header,
-:host-context(.dark) ion-toolbar {
-  --background: #1E1E1E;
-}
-
-:host-context(.dark) ion-title {
-  color: #E0E0E0;
-}
-
-:host-context(.dark) .back-button {
-  --color: #BB86FC;
-}
-
-:host-context(.dark) ion-item {
-  --background: #1E1E1E;
-  --ion-item-background: #1E1E1E;
-  --color: #E0E0E0;
-  --ion-item-text-color: #E0E0E0;
-  --border-radius: 12px;
-  margin-bottom: 12px;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.5);
-}
-
-/* Shadow DOM interno do item */
-:host-context(.dark) ion-item::part(native),
-:host-context(.dark) ion-item::part(native) ion-label {
-  background-color: #1E1E1E !important;
-  color: #E0E0E0 !important;
-}
-
-:host-context(.dark) ion-toggle {
-  --background: #444444;
-  --handle-background: #BB86FC;
-}
-
-:host-context(.dark) ion-toggle::part(label) {
-  color: #E0E0E0 !important;
+  .logout-button {
+    --background: #B71C1C;
+  }
 }
