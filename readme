@@ -1,0 +1,53 @@
+rodar o frontend local
+ 
+ cd TodoListApp
+ cd frontend
+
+ionic serve
+
+
+
+
+Sempre que mexer no frontend, faça:
+
+ionic build
+npx cap sync android
+
+
+
+
+
+
+
+
+rodar o backend local:
+
+ cd  TodoListApp
+ cd backend
+
+ node server.js
+
+
+
+
+
+senha DB
+
+ duBDVCcHzMZ88Zmh4Xo3SAindE6b7J6R
+
+
+
+
+
+
+
+
+diasytalo32@gmail.com
+
+ytalo
+
+
+Qual o nome do seu cachorro?
+
+
+Bela
